@@ -1,0 +1,25 @@
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+USER app
+WORKDIR /app
+EXPOSE 5030
+
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+ARG BUILD_CONFIGURATION=Release
+WORKDIR /src
+COPY ["AeC.DeveloperChallenge.Clima.API/AeC.DeveloperChallenge.Clima.API.csproj", "AeC.DeveloperChallenge.Clima.API/"]
+COPY ["AeC.DeveloperChallenge.Clima.Servicos/AeC.DeveloperChallenge.Clima.Servicos.csproj", "AeC.DeveloperChallenge.Clima.Servicos/"]
+COPY ["AeC.DeveloperChallenge.Clima.Modelos/AeC.DeveloperChallenge.Clima.Modelos.csproj", "AeC.DeveloperChallenge.Clima.Modelos/"]
+COPY ["AeC.DeveloperChallenge.Clima.Repositorio/AeC.DeveloperChallenge.Clima.Repositorios.csproj", "AeC.DeveloperChallenge.Clima.Repositorio/"]
+RUN dotnet restore "./AeC.DeveloperChallenge.Clima.API/AeC.DeveloperChallenge.Clima.API.csproj"
+COPY . .
+WORKDIR "/src/AeC.DeveloperChallenge.Clima.API"
+RUN dotnet build "./AeC.DeveloperChallenge.Clima.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
+
+FROM build AS publish
+ARG BUILD_CONFIGURATION=Release
+RUN dotnet publish "./AeC.DeveloperChallenge.Clima.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "AeC.DeveloperChallenge.Clima.API.dll"]

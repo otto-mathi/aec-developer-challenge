@@ -1,0 +1,42 @@
+services:
+  adc-bd-sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: adc-bd-sqlserver
+    environment:
+      SA_PASSWORD: "Admin123!"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    restart: always
+    networks:
+      - adc-network
+
+  mssqltools:
+    image: mcr.microsoft.com/mssql-tools
+    depends_on:
+      - adc-bd-sqlserver
+    volumes:
+      - ./SQL-AEC-DEVELOPER-CHALLENGE.sql:/tmp/SQL-AEC-DEVELOPER-CHALLENGE.sql
+    command: /bin/bash -c "sleep 5s && /opt/mssql-tools/bin/sqlcmd -S adc-bd-sqlserver -U sa -P Admin123! -d master -i /tmp/SQL-AEC-DEVELOPER-CHALLENGE.sql"
+    networks:
+      - adc-network
+
+  adc-api-net:
+    build:
+      context: .
+      dockerfile: AeC.DeveloperChallenge.Clima.API/DockerFile
+    container_name: adc-api-net
+    ports:
+      - "5030:5030"
+    depends_on:
+      - adc-bd-sqlserver
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5030
+      - DOTNET_URLS=http://+:5030
+    networks:
+      - adc-network
+
+networks:
+  adc-network:
+    driver: bridge
