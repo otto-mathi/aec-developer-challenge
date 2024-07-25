@@ -1,5 +1,6 @@
 ﻿using AeC.DeveloperChallenge.Clima.Modelos.DTOs;
 using AeC.DeveloperChallenge.Clima.Repositorios.APIsExternas.Interfaces;
+using System.Net;
 using System.Text.Json;
 
 namespace AeC.DeveloperChallenge.Clima.Repositorios.APIsExternas
@@ -42,12 +43,35 @@ namespace AeC.DeveloperChallenge.Clima.Repositorios.APIsExternas
         {
             var resposta = await this._httpClient.GetAsync($"cidade/{nomeCidade}");
 
-            resposta.EnsureSuccessStatusCode();
+            if (resposta != null)
+            {
+                if (resposta.IsSuccessStatusCode)
+                {
+                    var conteudo = await resposta.Content.ReadAsStringAsync();
 
-            var conteudo = await resposta.Content.ReadAsStringAsync();
-            var cidadesDTO = JsonSerializer.Deserialize<ICollection<CidadeDTO>>(conteudo);
+                    if (conteudo != null)
+                    {
+                        try
+                        {
+                            return JsonSerializer.Deserialize<ICollection<CidadeDTO>>(conteudo);
+                        }
+                        catch
+                        {
+                            throw new Exception("Não encontrado!");
+                        }
+                    }
+                }
+                else if (resposta.StatusCode == HttpStatusCode.NotFound)
+                {
+                    throw new Exception("Não encontrado!");
+                }
+                else
+                {
+                    resposta.EnsureSuccessStatusCode();
+                }
+            }
 
-            return cidadesDTO;
+            throw new Exception("Não encontrado!");
         }
 
         #endregion

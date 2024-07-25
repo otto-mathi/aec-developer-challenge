@@ -30,17 +30,15 @@ Necessárias as instalações do [Docker](https://docs.docker.com/get-docker/) e
 
 Passo 1: baixe, instale, e rode o [Docker](https://docs.docker.com/get-docker/) e o [Docker Compose](https://docs.docker.com/compose/install/).
 
-Passo 2: clone esse projeto no seu computador.
+Passo 2: clone esse projeto numa pasta em seu computador.
 
-Passo 3: abra o arquivo da solução no Visual Studio.
+Passo 3: abra o prompt de comando.
 
-Passo 4: certifique-se de que o projeto docker-compose esteja definido como inicial.
+Passo 4: digite o seguinte comando docker-compose -f <CAMINHO_ONDE_SEU_PROJETO_FOI_CLONADO>/AeC.DeveloperChallenge/docker-compose.yml up -d.
 
-Passo 5: rode o projeto (Ctrl + F5).
+Passo 5: aguarde o processamento ser concluído.
 
-Passo 6: aguarde o processamento ser concluído.
-
-Passo 7: o Swagger da aplicação estará disponível em:
+Passo 6: o Swagger da aplicação estará disponível em:
 [http://localhost:5030](http://localhost:5030)
 
 Dúvidas e sugestões: ottomn@gmail.com

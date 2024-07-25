@@ -27,6 +27,11 @@
         /// </summary>
         public string Mensagem { get; set; } = null!;
 
+        /// <summary>
+        /// Data
+        /// </summary>
+        public DateTime Data { get; set; }
+
         #endregion
     }
 }

@@ -1,7 +1,0 @@
-services:
-  api-net:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORTS=5030
-    ports:
-      - "5030"

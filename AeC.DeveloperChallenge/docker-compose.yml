@@ -11,7 +11,7 @@ services:
     networks:
       - adc-network
 
-  mssqltools:
+  adc-mssqltools:
     image: mcr.microsoft.com/mssql-tools
     depends_on:
       - adc-bd-sqlserver

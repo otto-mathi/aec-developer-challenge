@@ -4,8 +4,12 @@
       "commandName": "DockerCompose",
       "commandVersion": "1.0",
       "serviceActions": {
-        "api-net": "StartDebugging"
-      }
+        "adc-api-net": "StartWithoutDebugging"
+      },
+      "launchBrowser": true,
+      "launchUrl": "http://localhost:5030",
+      "dockerComposeFile": "docker-compose.yml",
+      "project": "AeC.DeveloperChallenge.Clima.API/AeC.DeveloperChallenge.Clima.API.csproj"
     }
   }
 }

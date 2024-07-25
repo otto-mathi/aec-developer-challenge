@@ -30,16 +30,13 @@ namespace AeC.DeveloperChallenge.Clima.API
 
             // Banco de dados
             servicos.AddTransient<IDbConnection>(provedor => new SqlConnection(connectionString));
-            servicos.AddTransient<IExecutorBancoDados, ExecutorBancoDados>();
+            servicos.AddScoped<IExecutorBancoDados, ExecutorBancoDados>();
 
             // Repositórios
             servicos.AddScoped<IClimaRepositorio, ClimaRepositorio>();
             servicos.AddScoped<ICidadeRepositorio, CidadeRepositorio>();
-            servicos.AddScoped<IRequisicaoRepositorio>(provedor =>
-                new RequisicaoRepositorio(provedor.GetRequiredService<IExecutorBancoDados>()));
-            servicos.AddScoped<ILogRequisicaoRepositorio>(provedor =>
-                new LogRequisicaoRepositorio(provedor.GetRequiredService<IExecutorBancoDados>()));
-
+            servicos.AddScoped<IRequisicaoRepositorio, RequisicaoRepositorio>();
+            servicos.AddScoped<ILogRequisicaoRepositorio, LogRequisicaoRepositorio>();
 
             servicos.AddHttpClient<ICidadeRepositorio, CidadeRepositorio>(httpClient =>
             {

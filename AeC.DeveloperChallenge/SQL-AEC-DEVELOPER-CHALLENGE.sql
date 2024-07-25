@@ -28,7 +28,7 @@ BEGIN
 	CREATE TABLE LogRequisicao
 	(
 		Codigo BIGINT IDENTITY(1, 1) NOT NULL,
-    		CodigoRequisicao BIGINT,
+    	CodigoRequisicao BIGINT,
 		Tipo VARCHAR(20) NOT NULL,
 		Data DATETIME NOT NULL,
 		Mensagem VARCHAR(5000) NOT NULL,

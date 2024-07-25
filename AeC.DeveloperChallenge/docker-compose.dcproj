@@ -7,12 +7,9 @@
     <ProjectGuid>c71eaca2-2b47-4958-a481-c16d7c8924dd</ProjectGuid>
     <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
     <DockerServiceUrl>{Scheme}://localhost:{ServicePort}/swagger</DockerServiceUrl>
-    <DockerServiceName>aec.developerchallenge.clima.api</DockerServiceName>
+    <DockerServiceName>adc-api-net</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="docker-compose.override.yml">
-      <DependentUpon>docker-compose.yml</DependentUpon>
-    </None>
     <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
     <None Include="SQL-AEC-DEVELOPER-CHALLENGE.sql" />

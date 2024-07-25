@@ -1,5 +1,6 @@
 ﻿using AeC.DeveloperChallenge.Clima.Modelos.DTOs;
 using AeC.DeveloperChallenge.Clima.Repositorios.APIsExternas.Interfaces;
+using System.Net;
 using System.Text.Json;
 
 namespace AeC.DeveloperChallenge.Clima.Repositorios.APIsExternas
@@ -42,12 +43,17 @@ namespace AeC.DeveloperChallenge.Clima.Repositorios.APIsExternas
         {
             var resposta = await this._httpClient.GetAsync($"clima/previsao/{codigoCidade}");
 
-            resposta.EnsureSuccessStatusCode();
+            if (resposta != null)
+            {
+                var conteudo = await resposta.Content.ReadAsStringAsync();
 
-            var conteudo = await resposta.Content.ReadAsStringAsync();
-            var climaDTO = JsonSerializer.Deserialize<ClimaCidadeDTO>(conteudo);
+                if (conteudo != null)
+                {
+                    return JsonSerializer.Deserialize<ClimaCidadeDTO>(conteudo);
+                }
+            }
 
-            return climaDTO;
+            return null!;
         }
 
         /// <summary>
@@ -59,12 +65,35 @@ namespace AeC.DeveloperChallenge.Clima.Repositorios.APIsExternas
         {
             var resposta = await this._httpClient.GetAsync($"clima/aeroporto/{icao}");
 
-            resposta.EnsureSuccessStatusCode();
+            if (resposta != null)
+            {
+                if (resposta.IsSuccessStatusCode)
+                {
+                    var conteudo = await resposta.Content.ReadAsStringAsync();
 
-            var conteudo = await resposta.Content.ReadAsStringAsync();
-            var climaDTO = JsonSerializer.Deserialize<ClimaAeroportoDTO>(conteudo);
+                    if (conteudo != null)
+                    {
+                        try
+                        {
+                            return JsonSerializer.Deserialize<ClimaAeroportoDTO>(conteudo);
+                        }
+                        catch
+                        {
+                            throw new Exception("Não encontrado!");
+                        }
+                    }
+                }
+                else if (resposta.StatusCode == HttpStatusCode.NotFound)
+                {
+                    throw new Exception("Não encontrado!");
+                }
+                else
+                {
+                    resposta.EnsureSuccessStatusCode();
+                }
+            }
 
-            return climaDTO;
+            throw new Exception("Não encontrado!");
         }
 
         #endregion

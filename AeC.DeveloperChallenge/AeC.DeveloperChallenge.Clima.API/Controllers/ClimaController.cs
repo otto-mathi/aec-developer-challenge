@@ -89,6 +89,8 @@ namespace AeC.DeveloperChallenge.Clima.API.Controllers
                 {
                     this._logger.LogInformation(TEXTO_LOG_GET_CLIMA_POR_CIDADE_NAO_ENCONTRADO, nomeCidade);
 
+                    await this.AdicionaRequisicao(NOME_CONTROLLER, NOME_METODO_GET_CLIMA_POR_NOME_CIDADE, "Não encontrado!", ("nomeCidade: " + nomeCidade));
+
                     return NotFound();
                 }
 
@@ -102,8 +104,15 @@ namespace AeC.DeveloperChallenge.Clima.API.Controllers
             {
                 this._logger.LogError(TEXTO_LOG_GET_CLIMA_POR_CIDADE_ERRO, nomeCidade, excecao.Message);
 
-                var codigoRequisicao = await this.AdicionaRequisicao(NOME_CONTROLLER, NOME_METODO_GET_CLIMA_POR_NOME_CIDADE, excecao.Message, ("nomeCidade: " + nomeCidade));
-                await AdicionaLogRequisicao(codigoRequisicao, excecao.Message);
+                try
+                {
+                    var codigoRequisicao = await this.AdicionaRequisicao(NOME_CONTROLLER, NOME_METODO_GET_CLIMA_POR_NOME_CIDADE, excecao.Message, ("nomeCidade: " + nomeCidade));
+                    await AdicionaLogRequisicao(codigoRequisicao, excecao.Message);
+                }
+                catch (Exception excecaoRequisicao)
+                {
+                    this._logger.LogError(TEXTO_LOG_GET_CLIMA_POR_CIDADE_ERRO, nomeCidade, excecaoRequisicao.Message + " - " + excecao.Message);
+                }
 
                 return StatusCode(500, excecao.Message);
             }
@@ -124,19 +133,12 @@ namespace AeC.DeveloperChallenge.Clima.API.Controllers
                 {
                     this._logger.LogInformation(TEXTO_LOG_GET_CLIMA_POR_AEROPORTO_NAO_ENCONTRADO, icao);
 
+                    await this.AdicionaRequisicao(NOME_CONTROLLER, NOME_METODO_GET_CLIMA_POR_ICAO_AEROPORTO, "Não encontrado!", ("icao: " + icao));
+
                     return NotFound();
                 }
 
                 this._logger.LogInformation(TEXTO_LOG_GET_CLIMA_POR_AEROPORTO, icao, this.SerializaRetorno(climaDTO, true));
-
-                await this._requisicaoServico.AdicionaRequisicaoAsync(new Requisicao
-                {
-                    ControllerOrigem = NOME_CONTROLLER,
-                    MetodoOrigem = NOME_METODO_GET_CLIMA_POR_ICAO_AEROPORTO,
-                    Data = DateTime.Now,
-                    Parametros = "icao: " + icao,
-                    Retorno = this.SerializaRetorno(climaDTO)
-                });
 
                 await this.AdicionaRequisicao(NOME_CONTROLLER, NOME_METODO_GET_CLIMA_POR_ICAO_AEROPORTO, climaDTO, ("icao: " + icao));
 
@@ -146,8 +148,15 @@ namespace AeC.DeveloperChallenge.Clima.API.Controllers
             {
                 this._logger.LogError(TEXTO_LOG_GET_CLIMA_POR_AEROPORTO_ERRO, icao, excecao.Message);
 
-                var codigoRequisicao = await this.AdicionaRequisicao(NOME_CONTROLLER, NOME_METODO_GET_CLIMA_POR_ICAO_AEROPORTO, excecao.Message, ("icao: " + icao));
-                await AdicionaLogRequisicao(codigoRequisicao, excecao.Message);
+                try
+                {
+                    var codigoRequisicao = await this.AdicionaRequisicao(NOME_CONTROLLER, NOME_METODO_GET_CLIMA_POR_ICAO_AEROPORTO, excecao.Message, ("icao: " + icao));
+                    await AdicionaLogRequisicao(codigoRequisicao, excecao.Message);
+                }
+                catch (Exception excecaoRequisicao)
+                {
+                    this._logger.LogError(TEXTO_LOG_GET_CLIMA_POR_CIDADE_ERRO, icao, excecaoRequisicao.Message + " - " + excecao.Message);
+                }
 
                 return StatusCode(500, excecao.Message);
             }
@@ -161,7 +170,14 @@ namespace AeC.DeveloperChallenge.Clima.API.Controllers
         /// <returns>Objet serializado</returns>
         private string SerializaRetorno(object conteudoRetorno, bool deveIndentar = false)
         {
-            return JsonSerializer.Serialize(conteudoRetorno, new JsonSerializerOptions { WriteIndented = deveIndentar });
+            if (conteudoRetorno.GetType() == typeof(string))
+            {
+                return conteudoRetorno.ToString();
+            }
+            else
+            {
+                return JsonSerializer.Serialize(conteudoRetorno, new JsonSerializerOptions { WriteIndented = deveIndentar });
+            }
         }
 
         /// <summary>
@@ -203,7 +219,8 @@ namespace AeC.DeveloperChallenge.Clima.API.Controllers
                 { 
                     CodigoRequisicao = codigoRequisicao,
                     Tipo = "Erro",
-                    Mensagem = mensagem
+                    Mensagem = mensagem,
+                    Data = DateTime.Now
                 }
             );
         }
